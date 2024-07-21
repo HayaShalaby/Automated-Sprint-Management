@@ -1,0 +1,23 @@
+# ninja log v5
+30	1093	7432617572497244	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+27	1121	7432618175086135	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+5	311	7432618926385810	CMakeFiles/sprinter_.dir/main.cpp.obj	3f5396df7ebaaf44
+19	551	7432618928694543	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+552	792	7432618931152422	sprinter_.exe	c1522d1bb62702dc
+2	542	7432625238237559	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+542	772	7432625240582346	sprinter_.exe	c1522d1bb62702dc
+5	471	7432638217702729	CMakeFiles/sprinter_.dir/main.cpp.obj	3f5396df7ebaaf44
+35	740	7432638220367492	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+5	705	7432638621015967	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+706	1013	7432638624101936	sprinter_.exe	c1522d1bb62702dc
+4	709	7432642065733817	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+710	976	7432642068406465	sprinter_.exe	c1522d1bb62702dc
+4	1066	7432679564496257	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+1067	1271	7432679566563164	sprinter_.exe	c1522d1bb62702dc
+2	338	7432682232744252	CMakeFiles/sprinter_.dir/main.cpp.obj	3f5396df7ebaaf44
+23	505	7432682234388121	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+505	707	7432682236473826	sprinter_.exe	c1522d1bb62702dc
+7	475	7432689840924555	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+475	643	7432689842653738	sprinter_.exe	c1522d1bb62702dc
+5	767	7432691407951011	CMakeFiles/sprinter_.dir/sprint.cpp.obj	efb62a77b96f737f
+767	936	7432691409673154	sprinter_.exe	c1522d1bb62702dc
