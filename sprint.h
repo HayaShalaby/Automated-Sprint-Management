@@ -7,21 +7,20 @@ using namespace std;
 
 struct feat{
     string name;
-    string sp;
-    string BE_WD;
-    string Mob_WD;
-    string QC_C;
-    string QC_E;
-    string QC_T;
-    string QC_A;
+    int sp;
+    int BE_WD;
+    int Mob_WD;
+    int QC_C;
+    int QC_E;
+    int QC_T;
+    int QC_A;
 
-    feat(const string &name, const string &sp, const string &beWd, const string &mobWd, const string &qcC,
-         const string &qcE, const string &qcT, const string &qcA);
-    //QC is always true
+    feat(const string &name, int sp, int beWd, int mobWd, int qcC, int qcE, int qcT, int qcA);
 };
 
 class sprint {
     vector<feat> features;
+    vector<feat> validFeatures;
     int sprintVel;
 
 public:
@@ -29,7 +28,8 @@ public:
     sprint(int vel);
     //Reads in work flow document and creates sprint according to sprint velocity
     //Outputs features chosen for sprint
-    void getFeat();
+    void getAllFeat();
+    void getValidFeat();
     void displayFeat();
     string getFirstWord(const string& str);
 };
