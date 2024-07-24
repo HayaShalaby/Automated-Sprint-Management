@@ -1,3 +1,3 @@
-C:/Users/Haya/Desktop/Orange 2024/sprinter-/cmake-build-debug/CMakeFiles/sprinter_.dir
-C:/Users/Haya/Desktop/Orange 2024/sprinter-/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Haya/Desktop/Orange 2024/sprinter-/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Haya/Desktop/Orange 2024/Sprinter/cmake-build-debug/CMakeFiles/sprinter_.dir
+C:/Users/Haya/Desktop/Orange 2024/Sprinter/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Haya/Desktop/Orange 2024/Sprinter/cmake-build-debug/CMakeFiles/rebuild_cache.dir

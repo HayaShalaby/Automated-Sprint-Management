@@ -21,7 +21,7 @@ string sprint::getFirstWord(const string& str) {
 void sprint::getAllFeat(){
     //user should be able to input the file through frontend
     ifstream inFile;
-    inFile.open("C:\\Users\\Haya\\Desktop\\Orange 2024\\sprinter-\\pList.csv");
+    inFile.open("C:\\Users\\Haya\\Desktop\\Orange 2024\\Sprinter\\pList.csv");
     string row, fName, SP, be, mob, qcc, qce, qct, qca;
     int SP_int, be_int, mob_int, qcc_int, qce_int, qct_int, qca_int;
     //Skipping first line (headers)
@@ -73,7 +73,7 @@ void sprint::getValidFeat() {
 
 void sprint::displayFeat() {
     ofstream outFile;
-    outFile.open("C:\\Users\\Haya\\Desktop\\Orange 2024\\sprinter-\\displayFile.txt", ios::app);
+    outFile.open("C:\\Users\\Haya\\Desktop\\Orange 2024\\Sprinter\\displayFile.txt", ios::app);
 
     vector<string> headers = {"Name", "SP", "BE_WD", "Mob_WD", "QC_C", "QC_E", "QC_T", "QC_A"};
     vector<int> columnWidths(headers.size(), 0);
