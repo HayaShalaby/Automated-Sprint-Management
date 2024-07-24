@@ -22,6 +22,8 @@ class sprint {
     vector<feat> features;
     vector<feat> validFeatures;
     int sprintVel;
+    int WDs;
+    vector<vector<string>> sprintTable;
 
 public:
     //Constructor which takes sprint velocity
@@ -32,6 +34,9 @@ public:
     void getValidFeat();
     void displayFeat();
     string getFirstWord(const string& str);
+    void calcSprintDays();
+    int checkCapacity(int start, int col, int workingDays);
+    void makeSprint();
 };
 
 
