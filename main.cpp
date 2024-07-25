@@ -10,5 +10,8 @@ int main(){
     sprint1.getValidFeat();
     sprint1.displayFeat();
 
+    sprint1.makeSprint();
+    sprint1.displaySprintFeat();
+
     return 0;
 }
