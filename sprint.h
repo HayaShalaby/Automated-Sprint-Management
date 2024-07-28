@@ -35,6 +35,7 @@ public:
     void getValidFeat();
     void displayFeat();
     string getFirstWord(const string& str);
+    bool hasFractionalPart(double number);
     void calcSprintDays();
     int checkCapacity(int start, int col, float workingDays);
     void assignCells(int startIndex, float workingDays, int col, string featName);

@@ -3,6 +3,7 @@
 #include<sstream>
 #include <iomanip>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 #include "sprint.h"
 
@@ -16,6 +17,12 @@ string sprint::getFirstWord(const string& str) {
     string firstWord;
     iss >> firstWord; // Extract the first word
     return firstWord;
+}
+
+bool hasFractionalPart(double number) {
+    double intPart;
+    double fracPart = modf(number, &intPart);
+    return fracPart != 0.0;
 }
 
 void sprint::getAllFeat(){
@@ -127,33 +134,67 @@ void sprint::displayFeat() {
 //    WDs += 3;
 //}
 
-int sprint::checkCapacity(int start, int col, float workingDays){
-    bool available = true;
+//Returns -1 if no capacity
+int sprint::checkCapacity(int start, int col, float workingDays) {
+    float WD = start + workingDays; // Calculate the target cell after adding workingDays
+    // Check capacity within the column
 
-    //Check capacity within column
-    for(int j = start; j < totalDays; j++){
-        //If there's an empty cell, check consecutive cells
-        if(sprintTable[j][col].empty()) {
-            for (int k = j; k < workingDays - 1; k++) {
-                if (!sprintTable[k][col].empty())
-                    available = false;
-                break;
+    for (int j = start; j < totalDays; j++) {
+        float remainingDays = workingDays; // Reset the remaining working days for each iteration
+        int k = j;
+
+        while (remainingDays > 0) {
+            // If the current cell is empty
+            if (sprintTable[k][col].empty()) {
+                k++; // Move to the next row
+                if(remainingDays == 0.5)
+                    remainingDays -= 0.5;
+                else
+                    remainingDays--;
             }
-
-            return j;
+                // If the current cell is half-empty
+            else if (sprintTable[k][col].back() == '/') {
+                remainingDays -= 0.5; // Decrease remaining working days by 0.5
+                k++; // Move to the next row
+            }
+                // If the current cell is not empty
+            else {
+                break; // Break the loop and move to the next starting row
+            }
         }
-//        //If there's an empty half
-//        else if(sprintTable[j][col].back() == '/'){
-//
-//        }
+
+        // If we have successfully allocated the required working days
+        if (remainingDays == 0) {
+            return j; // Return the starting row where the allocation is successful
+        }
     }
 
-    return -1;
+    return -1; // Return -1 if no suitable starting row is found
 }
 
+
 void sprint::assignCells(int startIndex, float workingDays, int col, string featName){
-    for(int i = startIndex; i < startIndex + workingDays; i++){
-        sprintTable[i][col] = featName;
+    int i = startIndex;
+    float rowRange = startIndex + workingDays;
+
+    while(i < rowRange && workingDays > 0){
+        //If cell is empty and working days greater than half
+        if(sprintTable[i][col].empty() && workingDays > 0.5) {
+            sprintTable[i][col] = featName;
+            workingDays--;
+            i++;
+        }
+        //If cell is empty and the remaining working days is half
+        else if(sprintTable[i][col].empty() && workingDays == 0.5) {
+            sprintTable[i][col] = featName + '/';
+            workingDays -= 0.5;
+        }
+        //If cell is half empty
+        else if(sprintTable[i][col].back() == '/') {
+            sprintTable[i][col] += featName;
+            workingDays -= 0.5;
+            i++;
+        }
     }
 }
 
@@ -186,14 +227,14 @@ void sprint::makeSprint() {
                 qcIndex = checkCapacity(qcStart, 7, features[i].QC_C);
                 if (qcIndex == -1) {
                     qcIndex = checkCapacity(qcStart, 8, features[i].QC_C);
-                    assignCells(qcIndex, features[i].QC_C, 8, features[i].name);
+                    assignCells(qcIndex, features[i].QC_C, 8, features[i].name + " TC");
                     //if none of the QC columns have capacity - exception - another if condition
                 } else
-                    assignCells(qcIndex, features[i].QC_C, 7, features[i].name);
+                    assignCells(qcIndex, features[i].QC_C, 7, features[i].name + " TC");
             } else
-                assignCells(qcIndex, features[i].QC_C, 6, features[i].name);
+                assignCells(qcIndex, features[i].QC_C, 6, features[i].name + " TC");
         } else {
-            assignCells(qcIndex, features[i].QC_C, 5, features[i].name);
+            assignCells(qcIndex, features[i].QC_C, 5, features[i].name + " TC");
         }
 
 
