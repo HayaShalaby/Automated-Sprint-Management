@@ -22,9 +22,8 @@ class sprint {
     vector<feat> features;
     vector<feat> validFeatures;
     int sprintVel;
-//    int WDs;
-    const int totalDays = 11;
-    string sprintTable[11][9];
+    const int totalDays = 20;
+    string sprintTable[20][9];
 
 public:
     //Constructor which takes sprint velocity
@@ -34,9 +33,6 @@ public:
     void getAllFeat();
     void getValidFeat();
     void displayFeat();
-    string getFirstWord(const string& str);
-    bool hasFractionalPart(double number);
-    void calcSprintDays();
     int checkCapacity(int start, int col, float workingDays);
     void assignCells(int startIndex, float workingDays, int col, string featName);
     void makeSprint();

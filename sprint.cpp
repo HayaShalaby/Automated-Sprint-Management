@@ -3,26 +3,13 @@
 #include<sstream>
 #include <iomanip>
 #include <algorithm>
-#include <cmath>
+#include <climits>
 using namespace std;
 #include "sprint.h"
 
 
 sprint::sprint(int vel){
     sprintVel = vel;
-}
-
-string sprint::getFirstWord(const string& str) {
-    istringstream iss(str);
-    string firstWord;
-    iss >> firstWord; // Extract the first word
-    return firstWord;
-}
-
-bool hasFractionalPart(double number) {
-    double intPart;
-    double fracPart = modf(number, &intPart);
-    return fracPart != 0.0;
 }
 
 void sprint::getAllFeat(){
@@ -123,17 +110,6 @@ void sprint::displayFeat() {
     outFile.close();
 }
 
-//void sprint::calcSprintDays(){
-//    WDs = 0;
-//
-//    for(int i = 0; i < features.size(); i++){
-//        WDs += (features[i].BE_WD + features[i].Mob_WD + features[i].QC_T / 4);
-//    }
-//
-//    //Adding 3 days for bug fixing and regression
-//    WDs += 3;
-//}
-
 //Returns -1 if no capacity
 int sprint::checkCapacity(int start, int col, float workingDays) {
     float WD = start + workingDays; // Calculate the target cell after adding workingDays
@@ -199,7 +175,8 @@ void sprint::assignCells(int startIndex, float workingDays, int col, string feat
 }
 
 void sprint::makeSprint() {
-    int beIndex, mobIndex, qcIndex, beStart, mobStart, qcStart;
+    int beIndex, mobIndex, mobIndex1, mobIndex2, qccIndex, qcIndex, beStart, mobStart, qcStart, col;
+    int qcCounter = 5;
     //Unless there is a dependency, we start checking column from 0
     beStart = 0; //never something other than 0
     mobStart = 0;
@@ -219,89 +196,83 @@ void sprint::makeSprint() {
         mobStart = 0;
         qcStart = 0;
 
-        //Check capacity within QC for test cases
-        qcIndex = checkCapacity(qcStart, 5, features[i].QC_C);
-        if (qcIndex == -1) {
-            qcIndex = checkCapacity(qcStart, 6, features[i].QC_C);
-            if (qcIndex == -1) {
-                qcIndex = checkCapacity(qcStart, 7, features[i].QC_C);
-                if (qcIndex == -1) {
-                    qcIndex = checkCapacity(qcStart, 8, features[i].QC_C);
-                    assignCells(qcIndex, features[i].QC_C, 8, features[i].name + " TC");
-                    //if none of the QC columns have capacity - exception - another if condition
-                } else
-                    assignCells(qcIndex, features[i].QC_C, 7, features[i].name + " TC");
-            } else
-                assignCells(qcIndex, features[i].QC_C, 6, features[i].name + " TC");
-        } else {
-            assignCells(qcIndex, features[i].QC_C, 5, features[i].name + " TC");
-        }
-
+        if(qcCounter >=8)
+            qcCounter = 5;
 
         //If the feature requires both backend and mobile development;
         if ((features[i].BE_WD) > 0 && (features[i].Mob_WD > 0)) {
-
             //Check capacity within BE column
-            beIndex = checkCapacity(beStart, 0, features[i].BE_WD);
+            beIndex = checkCapacity(beStart, 0, features[i].BE_WD); //Add exception if -1 returned
             assignCells(beIndex, features[i].BE_WD, 0, features[i].name);
 
             //Check capacity within Mob column
             mobStart = beIndex + features[i].BE_WD; //WITHOUT ADDING ONE
-            mobIndex = checkCapacity(mobStart, 1, features[i].Mob_WD);
-            if(mobIndex == -1){
-                mobIndex = checkCapacity(mobStart, 2, features[i].Mob_WD);
-                assignCells(mobIndex, features[i].Mob_WD, 2, features[i].name);
+            mobIndex1 = checkCapacity(mobStart, 1, features[i].Mob_WD);
+            mobIndex2 = checkCapacity(mobStart, 2, features[i].Mob_WD); //Add exceptions for all cases
+            if(mobIndex1 < mobIndex2){
+                mobIndex = mobIndex1;
+                col = 1;
             }
-            else
-                assignCells(mobIndex, features[i].Mob_WD, 1, features[i].name);
-
+            else{
+                mobIndex = mobIndex2;
+                col = 2;
+            }
+            assignCells(mobIndex, features[i].Mob_WD, col, features[i].name);
 
             //Check capacity within QC
             qcStart = mobIndex + features[i].Mob_WD;
-            qcIndex = checkCapacity(qcStart, 5, features[i].QC_E);
-            if (qcIndex == -1) {
-                qcIndex = checkCapacity(qcStart, 6, features[i].QC_E);
-                if (qcIndex == -1) {
-                    qcIndex = checkCapacity(qcStart, 7, features[i].QC_E);
-                    if (qcIndex == -1) {
-                        qcIndex = checkCapacity(qcStart, 8, features[i].QC_E);
-                        assignCells(qcIndex, features[i].QC_E, 8, features[i].name);
-                        //if none of the QC columns have capacity - exception - another if condition
-                    } else
-                        assignCells(qcIndex, features[i].QC_E, 7, features[i].name);
-                } else
-                    assignCells(qcIndex, features[i].QC_E, 6, features[i].name);
-            } else
-                assignCells(qcIndex, features[i].QC_E, 5, features[i].name);
+            qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+            qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+            qcCounter++;
+            //while the test cases only finds capacity after execution, assign next col
+            while((qcIndex < qccIndex) && qcCounter < 9){
+                qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+                qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+                qcCounter++;
+            }
+            if(qcIndex >= qccIndex){
+                assignCells(qccIndex, features[i].QC_C, qcCounter - 1, features[i].name + " TC");
+                assignCells(qcIndex, features[i].QC_E, qcCounter - 1, features[i].name);
+            }
+            else{
+                cout << "No sufficient capacity" <<endl;
+            }
+
         }
             //If the feature requires only mobile development
         else if ((features[i].BE_WD <= 0) && (features[i].Mob_WD > 0)) {
             //Check capacity within Mob column
-            mobIndex = checkCapacity(mobStart, 1, features[i].Mob_WD);
-            if(mobIndex == -1){
-                mobIndex = checkCapacity(mobStart, 2, features[i].Mob_WD);
-                assignCells(mobIndex, features[i].Mob_WD, 2, features[i].name);
+            mobIndex1 = checkCapacity(mobStart, 1, features[i].Mob_WD);
+            mobIndex2 = checkCapacity(mobStart, 2, features[i].Mob_WD); //Add exceptions for all cases
+            if(mobIndex1 < mobIndex2){
+                mobIndex = mobIndex1;
+                col = 1;
             }
-            else
-                assignCells(mobIndex, features[i].Mob_WD, 1, features[i].name);
+            else{
+                mobIndex = mobIndex2;
+                col = 2;
+            }
+            assignCells(mobIndex, features[i].Mob_WD, col, features[i].name);
 
             //Check capacity within QC
             qcStart = mobIndex + features[i].Mob_WD;
-            qcIndex = checkCapacity(qcStart, 5, features[i].QC_E);
-            if (qcIndex == -1) {
-                qcIndex = checkCapacity(qcStart, 6, features[i].QC_E);
-                if (qcIndex == -1) {
-                    qcIndex = checkCapacity(qcStart, 7, features[i].QC_E);
-                    if (qcIndex == -1) {
-                        qcIndex = checkCapacity(qcStart, 8, features[i].QC_E);
-                        assignCells(qcIndex, features[i].QC_E, 8, features[i].name);
-                        //if none of the QC columns have capacity - exception - another if condition
-                    } else
-                        assignCells(qcIndex, features[i].QC_E, 7, features[i].name);
-                } else
-                    assignCells(qcIndex, features[i].QC_E, 6, features[i].name);
-            } else
-                assignCells(qcIndex, features[i].QC_E, 5, features[i].name);
+            qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+            qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+            qcCounter++;
+            //while the test cases only finds capacity after execution, assign next col
+            while((qcIndex < qccIndex) && qcCounter < 9){
+                qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+                qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+                qcCounter++;
+            }
+
+            if(qcIndex >= qccIndex){
+                assignCells(qccIndex, features[i].QC_C, qcCounter - 1, features[i].name + " TC");
+                assignCells(qcIndex, features[i].QC_E, qcCounter - 1, features[i].name);
+            }
+            else{
+                cout << "No sufficient capacity" <<endl;
+            }
         }
             //If the feature requires only backend development
         else {
@@ -311,21 +282,23 @@ void sprint::makeSprint() {
 
             //Check capacity within QC
             qcStart = beIndex + features[i].BE_WD;
-            qcIndex = checkCapacity(qcStart, 5, features[i].QC_E);
-            if (qcIndex == -1) {
-                qcIndex = checkCapacity(qcStart, 6, features[i].QC_E);
-                if (qcIndex == -1) {
-                    qcIndex = checkCapacity(qcStart, 7, features[i].QC_E);
-                    if (qcIndex == -1) {
-                        qcIndex = checkCapacity(qcStart, 8, features[i].QC_E);
-                        assignCells(qcIndex, features[i].QC_E, 8, features[i].name);
-                        //if none of the QC columns have capacity - exception - another if condition
-                    } else
-                        assignCells(qcIndex, features[i].QC_E, 7, features[i].name);
-                } else
-                    assignCells(qcIndex, features[i].QC_E, 6, features[i].name);
-            } else
-                assignCells(qcIndex, features[i].QC_E, 5, features[i].name);
+            qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+            qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+            qcCounter++;
+            //while the test cases only finds capacity after execution, assign next col
+            while((qcIndex < qccIndex) && qcCounter < 9){
+                qcIndex = checkCapacity(qcStart, qcCounter, features[i].QC_E);
+                qccIndex = checkCapacity(0, qcCounter, features[i].QC_C);
+                qcCounter++;
+            }
+
+            if(qcIndex >= qccIndex){
+                assignCells(qccIndex, features[i].QC_C, qcCounter - 1, features[i].name + " TC");
+                assignCells(qcIndex, features[i].QC_E, qcCounter - 1, features[i].name);
+            }
+            else {
+                cout << "No sufficient capacity" << endl;
+            }
         }
     }
 
@@ -335,9 +308,11 @@ void sprint::makeSprint() {
         sprintTable[i][3] = sprintTable[i][1];
 
         //Android B to iOS B
-        sprintTable[i][3] = sprintTable[i][1];
+        sprintTable[i][4] = sprintTable[i][2];
     }
 }
+
+
 
 void sprint::displaySprintFeat(){
     ofstream outFile;
@@ -368,7 +343,7 @@ void sprint::displaySprintFeat(){
 
     // Print the 2D array with row indices and formatted as a table
     for (int i = 0; i < totalDays; ++i) {
-        outFile << setw(colWidth) << i << "|"; // Print the row index
+        outFile << setw(colWidth) << i + 1 << "|"; // Print the row index
         for (int j = 0; j < 9; ++j) {
             outFile << setw(colWidth) << sprintTable[i][j] << "|";
         }

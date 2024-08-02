@@ -2,7 +2,7 @@
 using namespace std;
 
 int main(){
-    sprint sprint1(22);
+    sprint sprint1(40);
 
     sprint1.getAllFeat();
     sprint1.displayFeat();
